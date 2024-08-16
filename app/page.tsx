@@ -36,8 +36,15 @@ const ProcessToolInvocations = ({
 };
 
 export default function Chat() {
-  const { messages, input, handleInputChange, handleSubmit } = useChat();
-  console.log({ messages });
+  const {
+    messages,
+    input,
+    handleInputChange,
+    handleSubmit,
+    isLoading,
+    ...rest
+  } = useChat();
+  console.log({ messages, rest });
   return (
     <div className="flex flex-col w-full max-w-md py-24 mx-auto stretch">
       <div className="space-y-4">
@@ -55,6 +62,17 @@ export default function Chat() {
                   </span>
                 )}
               </p>
+
+              {isLoading && m.id === messages[messages.length - 1].id && (
+                <div className="text-sm text-gray-500">
+                  <div className="flex space-x-2 justify-center items-center bg-white mt-4 dark:invert">
+                    <span className="sr-only">Loading...</span>
+                    <div className="h-2 w-2 bg-black rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                    <div className="h-2 w-2 bg-black rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                    <div className="h-2 w-2 bg-black rounded-full animate-bounce"></div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         ))}
