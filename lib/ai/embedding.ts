@@ -1,10 +1,11 @@
-import { embed, embedMany } from "ai";
+import { embed, embedMany, generateText } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { db } from "../db";
 import { cosineDistance, desc, gt, sql } from "drizzle-orm";
 import { embeddings } from "../db/schema/embeddings";
-
-const embeddingModel = openai.embedding("text-embedding-ada-002");
+import { MongoClient } from "mongodb";
+const uri = process.env.MONGODB_URI || "";
+const embeddingModel = openai.embedding("text-embedding-3-small");
 
 const generateChunks = (input: string): string[] => {
   return input
@@ -33,18 +34,59 @@ export const generateEmbedding = async (value: string): Promise<number[]> => {
   return embedding;
 };
 
+async function vectorSearch(embedding: any, collection: any) {
+  // Define the vector search pipeline
+  const pipeline = [
+    {
+      $vectorSearch: {
+        index: "vector_index",
+        path: "embedding",
+        queryVector: embedding,
+        numCandidates: 150,
+        limit: 4,
+      },
+    },
+    {
+      $project: {
+        url: 1, // Include the plot field
+        content: 1, //  # Include the title field
+        score: {
+          $meta: "vectorSearchScore", //# Include the search score
+        },
+      },
+    },
+  ];
+
+  // Execute the search
+  const results = await collection.aggregate(pipeline).toArray();
+  return results;
+}
+
 export const findRelevantContent = async (userQuery: string) => {
   const userQueryEmbedded = await generateEmbedding(userQuery);
-  const similarity = sql<number>`1 - (${cosineDistance(
-    embeddings.embedding,
-    userQueryEmbedded
-  )})`;
-  const similarGuides = await db
-    .select({ name: embeddings.content, similarity })
-    .from(embeddings)
-    .where(gt(similarity, 0.5))
-    .orderBy((t) => desc(t.similarity))
-    .limit(4);
+  const client = new MongoClient(uri);
+  let similarGuides = [];
+  try {
+    await client.connect();
+    const database = client.db("AISiteSearchData"); // Replace with your database name
+    const collection = database.collection("house337"); // Replace with your collection name
+    similarGuides = await vectorSearch(userQueryEmbedded, collection);
+  } finally {
+    await client.close();
+  }
+
   console.log({ similarGuides });
-  return similarGuides;
+  // get open ai to generate a response to the userQuery based on the similarGuides summaries
+
+  const { text } = await generateText({
+    model: openai("gpt-4o-mini"),
+    prompt: `Give a reponse to this question: ${userQuery}, using the following infomation based on the content of pages from the house337 website: ${similarGuides
+      .map(({ content }: { content: string }) => content)
+      .join(", ")}`,
+  });
+  console.log({ text });
+  return {
+    content: text,
+    websitesReferenced: similarGuides.map(({ url }: { url: string }) => url),
+  };
 };
