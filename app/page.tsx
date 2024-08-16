@@ -15,15 +15,20 @@ const ProcessToolInvocations = ({
       {toolInvocations.map((t: any) => (
         <div key={t.id}>
           <div className="font-bold">
-            Answer based on summaries of pages from the house337.com website
+            {t?.result?.content ? "Answer" : "Generating anwer"} based on
+            summaries of pages from the house337.com website
           </div>
           <p>{t?.result?.content}</p>
-          <h4 className="font-bold text-sm">Pages referenced</h4>
-          <ul>
-            {t?.result?.websitesReferenced.map((w: string) => (
-              <li key={w}>{w}</li>
-            ))}
-          </ul>
+          <h4 className="font-bold text-sm">
+            {t?.result?.websitesReferenced ? "Pages referenced" : ""}
+          </h4>
+          {
+            <ul>
+              {t?.result?.websitesReferenced.map((w: string) => (
+                <li key={w}>{w}</li>
+              ))}
+            </ul>
+          }
         </div>
       ))}
     </div>
