@@ -65,12 +65,19 @@ async function vectorSearch(embedding: any, collection: any) {
 export const findRelevantContent = async (userQuery: string) => {
   const userQueryEmbedded = await generateEmbedding(userQuery);
   const client = new MongoClient(uri);
-  let similarGuides = [];
+  let similarGuides = [] as any[];
   try {
     await client.connect();
-    const database = client.db("AISiteSearchData"); // Replace with your database name
-    const collection = database.collection("house337"); // Replace with your collection name
-    similarGuides = await vectorSearch(userQueryEmbedded, collection);
+    const database = client.db("TedData"); // Replace with your database name
+    const collection = database.collection("tedpages"); // Replace with your collection name
+    //fetch all the rows from the collection
+    const options = {
+      projection: {
+        url: 1, // Include the plot field
+        content: 1,
+      },
+    };
+    similarGuides = await collection.find({}, options).toArray();
   } finally {
     await client.close();
   }
@@ -80,7 +87,7 @@ export const findRelevantContent = async (userQuery: string) => {
 
   const { text } = await generateText({
     model: openai("gpt-4o-mini"),
-    prompt: `Give a reponse to this question: ${userQuery}, using the following infomation based on the content of pages from the house337 website: ${similarGuides
+    prompt: `Give a reponse to this question: ${userQuery}, using the following infomation based on the content of Ted's website and resume: ${similarGuides
       .map(({ content }: { content: string }) => content)
       .join(", ")}`,
   });
