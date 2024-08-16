@@ -89,7 +89,9 @@ export const findRelevantContent = async (userQuery: string) => {
     model: openai("gpt-4o-mini"),
     prompt: `Give a reponse to this question: ${userQuery}, using the following infomation based on the content of Ted's website and resume: ${similarGuides
       .map(({ content }: { content: string }) => content)
-      .join(", ")}`,
+      .join(", ")}.
+      Keep the responses specific to the questions asked and keep to one or two paragraphs.
+      `,
   });
   console.log({ text });
   return {
