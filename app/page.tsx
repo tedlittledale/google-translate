@@ -89,11 +89,7 @@ export default function Chat() {
         </p>
         <div className="w-full grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-3 md:grid-rows-1">
           <div>
-            <form
-              onSubmit={() => {
-                handleSubmit();
-              }}
-            >
+            <form onSubmit={handleSubmit}>
               <textarea
                 className="w-full p-2 border border-gray-300 rounded shadow-xl active:outline-[#4285F4] focus:outline-[#4285F4] "
                 value={input}
