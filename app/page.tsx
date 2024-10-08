@@ -15,8 +15,7 @@ const ProcessToolInvocations = ({
       {toolInvocations.map((t: any) => (
         <div key={t.id}>
           <div className="font-bold">
-            {t?.result?.content ? "Answer" : "Generating answer"} based on info
-            from Ted&apos;s website and resume
+            {t?.result?.content ? "Translation" : "Generating translation"}
           </div>
           <p>{t?.result?.content}</p>
           {/* <h4 className="font-bold text-sm">
