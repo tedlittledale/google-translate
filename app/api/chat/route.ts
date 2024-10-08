@@ -36,7 +36,7 @@ export async function POST(req: Request) {
 
   const result = await streamText({
     model: openai("gpt-4o-mini"),
-    system: `You are a helpful translation engine that can translate text into Yorkshire vernacular.
+    system: `You are a translation engine that can translate normal text into Yorkshire vernacular.
     Whatever the user asks, you should translate it into Yorkshire vernacular using as much slang as possible.
     The translation should be much shorter and to the point than the original text, if it's more than a paragraph you should reduce the total length by half. Yorkshire folk are know for their straight talking so the translation should reflect this.
       You should base the translation on the following guides to speaking yorkshire vernacular ${similarGuides
