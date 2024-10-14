@@ -47,7 +47,7 @@ export default function Chat() {
   const placeholderTexts = [
     "Translate some text into Yorkshire...",
     "Go on pet, don't be shy...",
-    "I’ll tek yer long chat an’ make it short an’ sweet!...",
+    "I’ll tek yer verbose text an’ make it short an’ sweet!...",
   ];
 
   const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
@@ -85,7 +85,7 @@ export default function Chat() {
         </h1>
         <p className="w-full text-center text-gray-500 text-sm mb-4">
           <span className="align-super">*</span>Goole is a port town in
-          Yorkshire, and is nowt to do wi&apos; Google company
+          Yorkshire, and nowt to do wi&apos; Google
         </p>
         <div className="w-full grid grid-cols-1 gap-4 md:grid-cols-[1fr_auto_1fr] md:gap-3 md:grid-rows-1">
           <div>
@@ -145,11 +145,11 @@ export default function Chat() {
                       ""
                     ) : messages[messages.length - 1].content.length > 0 ? (
                       <>
-                        <h3 className="italic">Original:</h3>
-                        <p className="italic">
+                        <h3 className="italic mb-3">Original:</h3>
+                        <p className="italic mb-3">
                           {messages[messages.length - 2].content}
                         </p>
-                        <h3 className="">Translation:</h3>
+                        <h3 className="mb-3">Translation:</h3>
                         <p>{messages[messages.length - 1].content}</p>
                       </>
                     ) : (
